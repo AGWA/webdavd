@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"golang.org/x/net/webdav"
@@ -12,6 +14,12 @@ import (
 	"src.agwa.name/go-listener"
 	_ "src.agwa.name/go-listener/tls"
 )
+
+func usageError(message string) {
+	fmt.Fprintln(os.Stderr, message)
+	flag.Usage()
+	os.Exit(2)
+}
 
 func main() {
 	var flags struct {
@@ -21,27 +29,33 @@ func main() {
 		public    bool
 		listen    []string
 	}
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Fprintf(flag.CommandLine.Output(), "For go-listener syntax, see https://pkg.go.dev/src.agwa.name/go-listener#section-readme\n")
+		fmt.Fprintf(flag.CommandLine.Output(), "The users file should contain lines consisting of: username, whitespace, password\n")
+	}
 	flag.BoolVar(&flags.readwrite, "readwrite", false, "Allow read/write access")
-	flag.StringVar(&flags.root, "root", "", "Root directory")
-	flag.StringVar(&flags.users, "users", "", "Path to users file")
+	flag.StringVar(&flags.root, "root", "", "Path to root directory (required)")
+	flag.StringVar(&flags.users, "users", "", "Path to users file (required unless -public is used)")
 	flag.BoolVar(&flags.public, "public", false, "Don't require authentication")
-	flag.Func("listen", "Socket to listen on (repeatable)", func(arg string) error {
+	flag.Func("listen", "Socket to listen on, in go-listener syntax (repeatable)", func(arg string) error {
 		flags.listen = append(flags.listen, arg)
 		return nil
 	})
 	flag.Parse()
 
 	if flags.root == "" {
-		log.Fatal("-root flag required")
+		usageError("-root flag required")
 	}
 	if len(flags.listen) == 0 {
-		log.Fatal("At least one -listen flag required")
+		usageError("At least one -listen flag required")
 	}
 	if flags.users == "" && !flags.public {
-		log.Fatal("Either -users or -public must be specified")
+		usageError("Either -users or -public must be specified")
 	}
 	if flags.users != "" && flags.public {
-		log.Fatal("-users and -public can't both be specified")
+		usageError("-users and -public can't both be specified")
 	}
 
 	handler := &webdav.Handler{
