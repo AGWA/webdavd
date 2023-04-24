@@ -33,7 +33,7 @@ func main() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		fmt.Fprintf(flag.CommandLine.Output(), "For go-listener syntax, see https://pkg.go.dev/src.agwa.name/go-listener#section-readme\n")
-		fmt.Fprintf(flag.CommandLine.Output(), "The users file should contain lines consisting of: username, whitespace, password\n")
+		fmt.Fprintf(flag.CommandLine.Output(), "Each line of the users file should contain a username and password separated by whitespace\n")
 	}
 	flag.BoolVar(&flags.readwrite, "readwrite", false, "Allow read/write access")
 	flag.StringVar(&flags.root, "root", "", "Path to root directory (required)")
