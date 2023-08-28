@@ -70,7 +70,7 @@ func loadUsersFile(filename string) (map[string]string, error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading %s: %s", filename, err)
+		return nil, fmt.Errorf("error reading %s: %w", filename, err)
 	}
 	return values, nil
 }
