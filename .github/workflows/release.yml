@@ -57,3 +57,6 @@ jobs:
               name: "sum.golang.org-sth",
               data: await fs.readFile("${{ runner.temp }}/go/pkg/sumdb/sum.golang.org/latest"),
             });
+      - name: Gossip checksum database STH
+        run: |
+          curl --max-time 15 --data-binary @${{ runner.temp }}/go/pkg/sumdb/sum.golang.org/latest https://gossip.sourcespotter.com/sum.golang.org
