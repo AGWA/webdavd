@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	golang.org/x/net v0.14.0
-	src.agwa.name/go-listener v0.5.0
+	src.agwa.name/go-listener v0.5.1
 )
 
 require (
