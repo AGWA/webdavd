@@ -15,7 +15,7 @@ Usage of ./webdavd:
   -public
     	Don't require authentication
   -readwrite
-    	Allow read/write access
+    	Allow read/write access (read-only is the default)
   -root string
     	Path to root directory (required)
   -users string
