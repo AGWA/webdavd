@@ -32,6 +32,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/net/webdav"
@@ -44,6 +45,19 @@ func usageError(message string) {
 	fmt.Fprintln(os.Stderr, message)
 	flag.Usage()
 	os.Exit(2)
+}
+
+func isLogNoise(message string) bool {
+	return strings.HasPrefix(message, "http: TLS handshake error")
+}
+
+type httpServerLogWriter struct{}
+
+func (httpServerLogWriter) Write(p []byte) (int, error) {
+	if message := string(p); !isLogNoise(message) {
+		log.Print(message)
+	}
+	return len(p), nil
 }
 
 func main() {
@@ -97,6 +111,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  30 * time.Second,
+		ErrorLog:     log.New(httpServerLogWriter{}, "", 0),
 	}
 
 	if flags.public {
